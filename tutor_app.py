@@ -34,13 +34,13 @@ def run_workflow(query):
     try:
         # Call the Llama-2-7b-chat model on Replicate for summarization
         research_analysis = replicate_client.run(
-            "meta/llama-2-7b-chat",  # Replace with actual model version if needed
+            "meta/llama-2-7b",  # Replace with actual model version if needed
             input={"prompt": raw_news}  # Changed to "prompt"
         )
         
         # Use Llama-2-7b-chat model again to generate a polished, publication-ready article
         final_article = replicate_client.run(
-            " meta/llama-2-7b-chat",  # Same model used again, or replace with any different model for editing
+            "meta/llama-2-7b",  # Same model used again, or replace with any different model for editing
             input={"prompt": research_analysis}  # Changed to "prompt"
         )
 
