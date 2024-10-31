@@ -22,7 +22,6 @@ def search_web(query):
         return news_results.strip()
     else:
         return f"Could not find news results for {query}."
-    
 
 # Run the workflow using Replicate's Llama model
 def run_workflow(query):
@@ -33,15 +32,15 @@ def run_workflow(query):
 
     # Step 2: Summarize search results using Replicate Llama model
     try:
-        # Replace "replicate/llama" with the actual model endpoint for Llama on Replicate
+        # Call the Llama-2-7b-chat model on Replicate for summarization
         research_analysis = replicate_client.run(
-            "replicate/llama",  # Make sure to replace this with the correct model version ID
+            "replicate/llama-2-7b-chat",  # Replace with actual model version if needed
             input={"text": raw_news}
         )
         
-        # Use Llama again to generate a polished, publication-ready article
+        # Use Llama-2-7b-chat model again to generate a polished, publication-ready article
         final_article = replicate_client.run(
-            "replicate/llama",  # Same model used again, or replace with any different model for editing
+            "replicate/llama-2-7b-chat",  # Same model used again, or replace with any different model for editing
             input={"text": research_analysis}
         )
 
