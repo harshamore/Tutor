@@ -4,11 +4,9 @@ import replicate
 # Set up Replicate API client with API key from secrets
 replicate_client = replicate.Client(api_token=st.secrets["replicate"]["api_key"])
 
-# Initialize chat history and user input in session state if they don't already exist
+# Initialize chat history in session state if it doesn't already exist
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""
 
 # Function to get response from Llama model via Replicate
 def get_llama_response(user_input):
@@ -38,7 +36,7 @@ def get_llama_response(user_input):
 st.title("Chat with Llama-2-7b - HARVARD MBA Professor Mode")
 
 # Chat input box
-user_input = st.text_input("Your message:", key="user_input")
+user_input = st.text_input("Your message:")
 
 # Display chat history
 for i, (user, bot) in enumerate(st.session_state.chat_history):
@@ -46,19 +44,19 @@ for i, (user, bot) in enumerate(st.session_state.chat_history):
     st.write(f"**Llama-2-7b (HARVARD MBA Professor):** {bot}")
 
 # Process user input and generate response
-if st.button("Send") and st.session_state.user_input:
+if st.button("Send") and user_input:
     # Append user input to chat history
-    st.session_state.chat_history.append((st.session_state.user_input, ""))  # Temporary empty response
+    st.session_state.chat_history.append((user_input, ""))  # Temporary empty response
     user_message_index = len(st.session_state.chat_history) - 1
     
     # Display real-time response
     chat_placeholder = st.empty()
     
     # Get response from model
-    llama_response = get_llama_response(st.session_state.user_input)
+    llama_response = get_llama_response(user_input)
     
     # Update chat history with model's response
-    st.session_state.chat_history[user_message_index] = (st.session_state.user_input, llama_response)
+    st.session_state.chat_history[user_message_index] = (user_input, llama_response)
     
-    # Clear the input field
-    st.session_state.user_input = ""
+    # Clear the input field by rerunning the app
+    st.experimental_rerun()
