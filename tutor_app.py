@@ -58,5 +58,5 @@ if st.button("Send") and user_input:
     # Update chat history with model's response
     st.session_state.chat_history[user_message_index] = (user_input, llama_response)
     
-    # Clear the input field by rerunning the app
-    st.experimental_rerun()
+    # Clear the input field by removing the text from the state instead of rerunning
+    st.session_state["user_input"] = None  # Manually clear text input value
