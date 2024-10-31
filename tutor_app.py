@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 import replicate
+from requests.exceptions import ReadTimeout
 
 # Set the REPLICATE_API_TOKEN environment variable from Streamlit secrets
 os.environ["REPLICATE_API_TOKEN"] = st.secrets["REPLICATE_API_TOKEN"]
@@ -12,27 +13,36 @@ replicate_client = replicate.Client()
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# Function to get response from Llama model via Replicate
-def get_llama_response(user_input):
+# Function to get response from Llama model via Replicate with timeout handling
+def get_llama_response(user_input, max_retries=3):
     # Prefix user input with the specified role
     prompt = f"HARVARD MBA Professor:\n{user_input}"
     input_params = {
         "top_k": 250,
         "prompt": prompt,
         "temperature": 0.95,
-        "max_new_tokens": 500,
+        "max_new_tokens": 200,  # Reduce token count to avoid long responses
         "min_new_tokens": -1
     }
     
-    # Stream response from Replicate API
+    # Retry loop for handling timeouts
     response = ""
-    try:
-        for event in replicate.stream("meta/llama-2-7b", input=input_params):
-            response += event
-            # Update the response in real-time
-            chat_placeholder.markdown(response + "▌")
-    except Exception as e:
-        response = f"Error: {e}"
+    for attempt in range(max_retries):
+        try:
+            for event in replicate.stream("meta/llama-2-7b", input=input_params):
+                response += event
+                # Update the response in real-time
+                chat_placeholder.markdown(response + "▌")
+            break  # Exit loop if successful
+
+        except ReadTimeout:
+            if attempt < max_retries - 1:
+                st.warning(f"Timeout occurred, retrying... ({attempt + 1}/{max_retries})")
+            else:
+                response = "Error: The operation timed out after multiple attempts."
+        except Exception as e:
+            response = f"Error: {e}"
+            break
     
     return response
 
