@@ -1,8 +1,12 @@
+import os
 import streamlit as st
 import replicate
 
-# Set up Replicate API client with API key from secrets
-replicate_client = replicate.Client(api_token=st.secrets["replicate"]["api_key"])
+# Set the REPLICATE_API_TOKEN environment variable from Streamlit secrets
+os.environ["REPLICATE_API_TOKEN"] = st.secrets["REPLICATE_API_TOKEN"]
+
+# Initialize Replicate client
+replicate_client = replicate.Client()
 
 # Initialize chat history in session state if it doesn't already exist
 if "chat_history" not in st.session_state:
@@ -58,5 +62,5 @@ if st.button("Send") and user_input:
     # Update chat history with model's response
     st.session_state.chat_history[user_message_index] = (user_input, llama_response)
     
-    # Clear the input field by removing the text from the state instead of rerunning
+    # Clear the input field by setting the session state variable
     st.session_state["user_input"] = None  # Manually clear text input value
