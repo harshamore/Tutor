@@ -27,11 +27,9 @@ def get_llama_response(user_input, max_retries=3):
     response = ""
     for attempt in range(max_retries):
         try:
-            # Collect the entire response from the stream
-            for event in replicate_client.run("meta/llama-2-7b", input=input_params):
-                response += event
+            # Call Replicate's model and capture response as a single batch
+            response = replicate_client.run("meta/llama-2-7b-chat:latest", input=input_params)
             break  # Exit loop if successful
-
         except ReadTimeout:
             if attempt < max_retries - 1:
                 st.warning(f"Timeout occurred, retrying... ({attempt + 1}/{max_retries})")
@@ -60,9 +58,8 @@ if st.button("Send") and user_input:
     st.session_state.chat_history.append((user_input, ""))  # Temporary empty response
     user_message_index = len(st.session_state.chat_history) - 1
     
-    # Display spinner while waiting for response
-    with st.spinner("Generating response... Please wait."):
-        llama_response = get_llama_response(user_input)
+    # Get response from model without a progress indicator
+    llama_response = get_llama_response(user_input)
     
     # Update chat history with model's response
     st.session_state.chat_history[user_message_index] = (user_input, llama_response)
