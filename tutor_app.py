@@ -3,7 +3,7 @@ import streamlit as st
 import replicate
 from requests.exceptions import ReadTimeout
 
-# Set the REPLICATE_API_TOKEN environment variable from Streamlit secrets
+# Set up REPLICATE_API_TOKEN environment variable from Streamlit secrets
 os.environ["REPLICATE_API_TOKEN"] = st.secrets["REPLICATE_API_TOKEN"]
 
 # Initialize Replicate client
@@ -15,22 +15,20 @@ if "chat_history" not in st.session_state:
 
 # Function to get response from Llama model via Replicate with timeout handling
 def get_llama_response(user_input, max_retries=3):
-    # Prefix user input with the specified role
     prompt = f"HARVARD MBA Professor:\n{user_input}"
     input_params = {
         "top_k": 250,
         "prompt": prompt,
         "temperature": 0.95,
-        "max_new_tokens": 200,  # Reduce token count to avoid long responses
-        "min_new_tokens": -1
+        "max_new_tokens": 200,  # Adjust token count as needed
     }
     
-    # Retry loop for handling timeouts
+    # Retry loop to handle potential timeouts
     response = ""
     for attempt in range(max_retries):
         try:
-            # Collect all events into the response string
-            for event in replicate.stream("meta/llama-2-7b", input=input_params):
+            # Collect the entire response from the stream
+            for event in replicate_client.run("meta/llama-2-7b", input=input_params):
                 response += event
             break  # Exit loop if successful
 
@@ -70,4 +68,4 @@ if st.button("Send") and user_input:
     st.session_state.chat_history[user_message_index] = (user_input, llama_response)
     
     # Clear the input field by setting the session state variable
-    st.session_state["user_input"] = None  # Manually clear text input value
+    st.session_state["user_input"] = ""  # Reset input for next message
