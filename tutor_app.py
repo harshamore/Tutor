@@ -23,7 +23,6 @@ def get_llama_response(user_input, max_retries=3):
         "max_new_tokens": 200,  # Adjust token count as needed
     }
     
-    # Retry loop to handle potential timeouts
     response = ""
     for attempt in range(max_retries):
         try:
@@ -44,25 +43,29 @@ def get_llama_response(user_input, max_retries=3):
 # Streamlit app interface
 st.title("Professor Mrs. Singy Fonty")
 
-# Chat input box
-user_input = st.text_input("Your message:")
+# Input box for user message, directly stored in session state
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""  # Initialize if not already set
+
+# Text input updates session state directly
+st.session_state.user_input = st.text_input("Your message:", value=st.session_state.user_input)
 
 # Display chat history
 for i, (user, bot) in enumerate(st.session_state.chat_history):
     st.write(f"**User:** {user}")
-    st.write(f"**Chat History:** {bot}")
+    st.write(f"**Professor Mrs. Singy Fonty:** {bot}")
 
-# Process user input and generate response
-if st.button("Send") and user_input:
-    # Append user input to chat history
-    st.session_state.chat_history.append((user_input, ""))  # Temporary empty response
-    user_message_index = len(st.session_state.chat_history) - 1
-    
-    # Get response from model without a progress indicator
+# Process user input and generate response when "Send" button is clicked
+if st.button("Send") and st.session_state.user_input.strip():
+    # Store user input and clear the input field in session state
+    user_input = st.session_state.user_input
+    st.session_state.user_input = ""  # Clear input field for next message
+
+    # Append user input to chat history with a placeholder for the response
+    st.session_state.chat_history.append((user_input, "Generating response..."))
+
+    # Get response from the model
     llama_response = get_llama_response(user_input)
     
-    # Update chat history with model's response
-    st.session_state.chat_history[user_message_index] = (user_input, llama_response)
-    
-    # Clear the input field by setting the session state variable
-    st.session_state["user_input"] = ""  # Reset input for next message
+    # Update the latest chat entry with the model's response
+    st.session_state.chat_history[-1] = (user_input, llama_response)
