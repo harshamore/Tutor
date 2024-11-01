@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 import replicate
-import time
 from requests.exceptions import ReadTimeout
 
 # Set the REPLICATE_API_TOKEN environment variable from Streamlit secrets
@@ -63,20 +62,12 @@ if st.button("Send") and user_input:
     st.session_state.chat_history.append((user_input, ""))  # Temporary empty response
     user_message_index = len(st.session_state.chat_history) - 1
     
-    # Display progress bar
-    progress_bar = st.progress(0)
-    
-    # Simulate waiting time with increments (assuming a max wait of 1 minute for demonstration)
-    for i in range(100):
-        time.sleep(0.6)  # Adjust time to approximate the expected response duration
-        progress_bar.progress(i + 1)
-    
-    # Get response from model
-    llama_response = get_llama_response(user_input)
+    # Display spinner while waiting for response
+    with st.spinner("Generating response... Please wait."):
+        llama_response = get_llama_response(user_input)
     
     # Update chat history with model's response
     st.session_state.chat_history[user_message_index] = (user_input, llama_response)
     
-    # Clear the progress bar and input field by setting the session state variable
-    progress_bar.empty()
+    # Clear the input field by setting the session state variable
     st.session_state["user_input"] = None  # Manually clear text input value
