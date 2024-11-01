@@ -15,12 +15,12 @@ if "chat_history" not in st.session_state:
 
 # Function to get response from Llama model via Replicate with timeout handling
 def get_llama_response(user_input, max_retries=3):
-    prompt = f"HARVARD MBA Professor:\n{user_input}"
+    prompt = f"HARVARD MBA Professor answering business questions in a simplified way with real world example in less than 200 words:\n{user_input}"
     input_params = {
         "top_k": 250,
         "prompt": prompt,
         "temperature": 0.95,
-        "max_new_tokens": 200,  # Adjust token count as needed
+        "max_new_tokens": 512,  # Adjust token count as needed
     }
     
     # Retry loop to handle potential timeouts
@@ -42,7 +42,7 @@ def get_llama_response(user_input, max_retries=3):
     return response
 
 # Streamlit app interface
-st.title("Chat with Llama-2-7b - HARVARD MBA Professor Mode")
+st.title("Professor Mrs Singy Fonty")
 
 # Chat input box
 user_input = st.text_input("Your message:")
