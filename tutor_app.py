@@ -61,12 +61,12 @@ if st.button("Send") and st.session_state.user_input.strip():
     user_input = st.session_state.user_input
     st.session_state.user_input = ""  # Clear input field for next message
 
-    # Append user input to chat history with a placeholder for the response
-    hourglass_placeholder = "⏳ Generating response..."
-    st.session_state.chat_history.append((user_input, hourglass_placeholder))
+    # Append user input to chat history and set up a placeholder for the hourglass icon
+    hourglass_placeholder = st.empty()  # Initialize placeholder
+    st.session_state.chat_history.append((user_input, "⏳ Generating response..."))
 
-    # Display chat history including the hourglass icon
-    st.experimental_rerun()  # Rerun to immediately show the hourglass icon
+    # Display hourglass while waiting for the response
+    hourglass_placeholder.markdown("⏳ Generating response...")
 
     # Get response from the model
     llama_response = get_llama_response(user_input)
@@ -74,5 +74,5 @@ if st.button("Send") and st.session_state.user_input.strip():
     # Update the latest chat entry with the model's response
     st.session_state.chat_history[-1] = (user_input, llama_response)
     
-    # Refresh to display the final response
-    st.experimental_rerun()
+    # Clear hourglass placeholder and update with actual response
+    hourglass_placeholder.empty()
