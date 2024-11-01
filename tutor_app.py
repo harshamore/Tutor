@@ -28,7 +28,7 @@ def get_llama_response(user_input, max_retries=3):
     for attempt in range(max_retries):
         try:
             # Call Replicate's model and capture response as a single batch
-            response = replicate_client.run("meta/llama-2-7b-chat:latest", input=input_params)
+            response = replicate_client.run("meta/meta-llama-3-70b-instruct", input=input_params)
             break  # Exit loop if successful
         except ReadTimeout:
             if attempt < max_retries - 1:
@@ -42,7 +42,7 @@ def get_llama_response(user_input, max_retries=3):
     return response
 
 # Streamlit app interface
-st.title("Professor Mrs Singy Fonty")
+st.title("Professor Mrs. Singy Fonty")
 
 # Chat input box
 user_input = st.text_input("Your message:")
@@ -50,7 +50,7 @@ user_input = st.text_input("Your message:")
 # Display chat history
 for i, (user, bot) in enumerate(st.session_state.chat_history):
     st.write(f"**User:** {user}")
-    st.write(f"**Llama-2-7b (HARVARD MBA Professor):** {bot}")
+    st.write(f"**Chat History:** {bot}")
 
 # Process user input and generate response
 if st.button("Send") and user_input:
