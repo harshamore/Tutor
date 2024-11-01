@@ -20,7 +20,7 @@ def get_llama_response(user_input, max_retries=3):
         "top_k": 250,
         "prompt": prompt,
         "temperature": 0.95,
-        "max_new_tokens": 512,  # Adjust token count as needed
+        "max_new_tokens": 200,  # Adjust token count as needed
     }
     
     # Retry loop to handle potential timeouts
